@@ -150,14 +150,14 @@ class IDACoreAPI(DisassemblerCoreAPI):
         self._dockable_factory[dockable_name] = create_widget_callback
 
     def create_dockable_widget(self, parent, dockable_name):
-        import sip
+        import shiboken6
 
         # create a dockable widget, and save a reference to it for later use
         twidget = idaapi.create_empty_widget(dockable_name)
         self._dockable_widgets[dockable_name] = twidget
 
         # cast the IDA 'twidget' as a Qt widget for use
-        widget = sip.wrapinstance(int(twidget), QtWidgets.QWidget)
+        widget = shiboken6.wrapInstance(int(twidget), QtWidgets.QWidget)
         widget.name = dockable_name
         widget.visible = False
 
@@ -226,7 +226,6 @@ class IDACoreAPI(DisassemblerCoreAPI):
         # attempt to generate an 'html' dump of the first 0x20 bytes (instructions)
         ida_fd = idaapi.fopenWT(path)
         idaapi.gen_file(idaapi.OFILE_LST, ida_fd, imagebase, imagebase+0x20, idaapi.GENFLG_GENHTML)
-        idaapi.eclose(ida_fd)
 
         # read the dumped text
         with open(path, "r") as fd:
@@ -291,8 +290,8 @@ class IDACoreAPI(DisassemblerCoreAPI):
         self._touch_ida_window(twidget)
 
         # locate the Qt Widget for a form and take 1px image slice of it
-        import sip
-        widget = sip.wrapinstance(int(twidget), QtWidgets.QWidget)
+        import shiboken6
+        widget = shiboken6.wrapInstance(int(twidget), QtWidgets.QWidget)
         pixmap = widget.grab(QtCore.QRect(0, 10, widget.width(), 1))
 
         # convert the raw pixmap into an image (easier to interface with)
